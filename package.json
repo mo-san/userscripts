@@ -1,0 +1,22 @@
+{
+  "name": "userscripts",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@biomejs/biome": "1.6.4",
+    "@types/bun": "latest",
+    "@types/tampermonkey": "^5.0.2",
+    "eslint": "^9.0.0",
+    "eslint-plugin-userscripts": "^0.5.2",
+    "userscript-metadata": "^1.1.0"
+  },
+  "description": "My User Scripts",
+  "private": true,
+  "scripts": {
+    "start": "bun run build.ts --watch",
+    "build": "bun run build.ts",
+    "lint": "eslint '**/*.{js,ts}'",
+    "lint:fix": "eslint --fix '**/*.{js,ts}'",
+    "lint:userscripts": "eslint --no-eslintrc --config .eslintrc.userscripts.js 'dist/**/*.js'"
+  },
+  "type": "module"
+}
