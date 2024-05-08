@@ -1,0 +1,10 @@
+{
+	"name": "Saxobank",
+	"namespace": "https://github.com/mo-san",
+	"version": "1.0.0",
+	"description": "Say hello",
+	"author": "Me",
+	"match": "*://www.saxotrader.com/*",
+	"grant": ["GM_xmlhttpRequest", "GM.xmlhttpRequest"],
+	"connect": "api.excelapi.org"
+}
