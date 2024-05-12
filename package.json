@@ -1,14 +1,6 @@
 {
   "name": "userscripts",
   "version": "1.0.0",
-  "devDependencies": {
-    "@biomejs/biome": "1.6.4",
-    "@types/bun": "latest",
-    "@types/tampermonkey": "^5.0.2",
-    "eslint": "^9.0.0",
-    "eslint-plugin-userscripts": "^0.5.2",
-    "userscript-metadata": "^1.1.0"
-  },
   "description": "My User Scripts",
   "private": true,
   "scripts": {
@@ -18,5 +10,19 @@
     "lint:fix": "eslint --fix '**/*.{js,ts}'",
     "lint:userscripts": "eslint --no-eslintrc --config .eslintrc.userscripts.js 'dist/**/*.js'"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@biomejs/biome": "1.6.4",
+    "@types/bun": "latest",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "@types/tampermonkey": "^5.0.2",
+    "clsx": "^2.1.1",
+    "eslint": "^9.0.0",
+    "eslint-plugin-userscripts": "^0.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.3",
+    "userscript-metadata": "^1.1.0"
+  }
 }

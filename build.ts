@@ -4,17 +4,16 @@ import { parseArgs } from "node:util";
 import { Glob } from "bun";
 import { type Metadata, type SingleValue, type Value, stringify } from "userscript-metadata";
 
-/** ソースコードのあるディレクトリ */
-const SRC = "src";
-/** 出力先ディレクトリ */
-const DIST = "dist";
-
 const cleanUp = (dist: string) => {
 	// 出力先ディレクトリが存在しない場合は何もしない
 	if (!Bun.file(dist).exists()) return;
 
 	console.log("Cleaning up the dist directory...");
 	rmSync(dist, { recursive: true, force: true });
+};
+
+const buildTailwind = async () => {
+	await Bun.spawn(["bun", "run", "tailwindcss", "-i", "src/saxo/style.css", "-o", "src/saxo/saxo-dist.css"]);
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -24,11 +23,11 @@ const readMetadata = async (path: string): Promise<Metadata> => await Bun.file(p
 const readContent = async (path: string): Promise<string> => await Bun.file(path).text();
 
 const replaceSlash = (val: string) => val.replace(/\\/g, "/");
-const manifestPath = (entryPath: string) => replaceSlash(entryPath).replace(/index\.ts$/, "manifest.json");
+const manifestPath = (entryPath: string) => replaceSlash(entryPath).replace(/index\.tsx?$/, "manifest.json");
 const mainScriptPath = (entryPath: string) =>
-	replaceSlash(entryPath).replace(new RegExp(`^${SRC}/([^/]+)/index\.ts$`), `${DIST}/$1.user.js`);
+	replaceSlash(entryPath).replace(/^src\/([^\/]+)\/index\.tsx?$/, "dist/$1.user.js");
 const devScriptPath = (entryPath: string) =>
-	replaceSlash(entryPath).replace(new RegExp(`^${SRC}/([^/]+)/index\.ts$`), `${DIST}/$1.dev.user.js`);
+	replaceSlash(entryPath).replace(/^src\/([^\/]+)\/index\.tsx?$/, "dist/$1.dev.user.js");
 
 /**
  * 開発時用のダミーとなるユーザースクリプトのメタデータを生成します。
@@ -54,13 +53,13 @@ const prependMetadata = async (entryPath: string) => {
 const writeDevScript = async (entryPath: string) => {
 	const manifest = await readMetadata(manifestPath(entryPath));
 	const banner = stringify(devify(manifest, entryPath));
-	await Bun.write(devScriptPath(entryPath), `${banner}\n\n${await readContent(`${SRC}/dev.ts`)}`);
+	await Bun.write(devScriptPath(entryPath), `${banner}\n\n${await readContent("src/dev.ts")}`);
 };
 
 /**
  * すべてのエントリーポイント
  */
-const entryPoints = Array.from(new Glob(`${SRC}/*/index.ts`).scanSync());
+const entryPoints = Array.from(new Glob("src/*/index.{ts,tsx}").scanSync());
 
 /**
  * 指定されたエントリーポイントに対してビルドを行います。
@@ -68,8 +67,8 @@ const entryPoints = Array.from(new Glob(`${SRC}/*/index.ts`).scanSync());
 const build = async (entryPaths: string[]) => {
 	return await Bun.build({
 		entrypoints: entryPaths,
-		outdir: DIST,
-		root: SRC,
+		outdir: "dist",
+		root: "src",
 		splitting: false,
 		sourcemap: "external",
 		minify: false,
@@ -81,6 +80,9 @@ const build = async (entryPaths: string[]) => {
  * すべてのエントリーポイントに対してビルドを行います。
  */
 const buildAll = async () => {
+	cleanUp("dist");
+	await buildTailwind();
+
 	for (const entryPath of entryPoints) {
 		const result = await build([entryPath]);
 
@@ -105,13 +107,16 @@ const buildAll = async () => {
  * @link https://github.com/oven-sh/bun/issues/5866#issuecomment-1868329613
  */
 const watchAndBuild = async () => {
+	cleanUp("dist");
+	await buildTailwind();
+	await build(entryPoints);
 	console.log("Watching for changes...");
 
-	const srcWatcher = watch(`${import.meta.dir}/${SRC}`, { recursive: true }, async (_event, filename) => {
+	const srcWatcher = watch(`${import.meta.dir}/src`, { recursive: true }, async (_event, filename) => {
 		if (!filename) return;
 		if (filename.endsWith("~")) return; // temporary backup files
 
-		console.log(`File changed: "${join(import.meta.dir, SRC, filename)}". Rebuilding...`);
+		console.log(`File changed: "${join(import.meta.dir, "src", filename)}". Rebuilding...`);
 
 		await build(entryPoints);
 
@@ -144,10 +149,7 @@ const {
 });
 
 if (watchMode) {
-	cleanUp(DIST);
-	await build(entryPoints);
 	await watchAndBuild();
 } else {
-	cleanUp(DIST);
 	await buildAll();
 }
