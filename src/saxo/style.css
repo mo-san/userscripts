@@ -1,3 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+#saxo-helper {
+  display: grid;
+  place-content: center;
+  position: absolute;
+  bottom: 3rem;
+  right: 1rem;
+  background-color: rgb(220 220 233 / 60%);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px #333;
+  border: 1px solid #000;
+}

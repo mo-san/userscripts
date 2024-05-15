@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"description": "Say hello",
 	"author": "Me",
-	"match": "*://www.saxotrader.com/*",
+	"match": "*://www.saxotrader.com/d/trading/open-positions",
 	"grant": ["GM_xmlhttpRequest", "GM.xmlhttpRequest"],
 	"connect": "api.excelapi.org"
 }

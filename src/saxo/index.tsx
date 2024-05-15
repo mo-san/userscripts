@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import style from "./saxo-dist.css" with { type: "text" };
+import style from "./style.css" with { type: "text" };
 import { getUsdToJpy } from "./util.ts";
 
 const getDomValue = (selector: string) => {
@@ -79,21 +79,22 @@ const Main = () => {
 const App = () => {
 	return (
 		<>
-			<div className="absolute grid place-content-center bg-zinc-900 opacity-50">
-				<Main />
-			</div>
+			<Main />
 			<style>{style}</style>
 		</>
 	);
 };
 
+const getRootElement = (): HTMLElement => {
+	const root = document.getElementById("saxo-helper");
+	if (root) return root;
+	document.body.insertAdjacentHTML("beforeend", `<div id="saxo-helper"></div>`);
+	return document.getElementById("saxo-helper") as HTMLElement;
+};
+
 const main = async () => {
-	let root = document.getElementById("saxo-helper");
-	if (!root) {
-		document.body.insertAdjacentHTML("beforeend", `<div id="saxo-helper"></div>`);
-		root = document.getElementById("saxo-helper") as HTMLElement;
-	}
-	createRoot(root).render(<App />);
+	await getFooterElement(); // #footerが現れるのを待つ
+	createRoot(getRootElement()).render(<App />);
 };
 
 if (document.readyState === "complete") {

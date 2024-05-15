@@ -12,10 +12,6 @@ const cleanUp = (dist: string) => {
 	rmSync(dist, { recursive: true, force: true });
 };
 
-const buildTailwind = async () => {
-	await Bun.spawn(["bun", "run", "tailwindcss", "-i", "src/saxo/style.css", "-o", "src/saxo/saxo-dist.css"]);
-};
-
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const isString = (value: any): value is string => typeof value === "string" || value instanceof String;
 
@@ -81,7 +77,6 @@ const build = async (entryPaths: string[]) => {
  */
 const buildAll = async () => {
 	cleanUp("dist");
-	await buildTailwind();
 
 	for (const entryPath of entryPoints) {
 		const result = await build([entryPath]);
@@ -108,7 +103,6 @@ const buildAll = async () => {
  */
 const watchAndBuild = async () => {
 	cleanUp("dist");
-	await buildTailwind();
 	await build(entryPoints);
 	console.log("Watching for changes...");
 
