@@ -62,15 +62,21 @@ const Main = () => {
 	}
 
 	return (
-		<div className={clsx()}>
+		<div className={clsx("container")}>
 			<div>
-				<span>利回り:</span>
-				<span>{rimawariText}</span>
-				<span>({rate} 円/ドル)</span>
+				<span>
+					利回り:
+					<br />({rate} 円/ドル)
+				</span>
+				<span className={clsx("percentage")}>{rimawariText}%</span>
 			</div>
 			<div>
-				<span>約定後の証拠金使用率:</span>
-				<span>{shiyouritsuText}</span>
+				<span>
+					約定後の
+					<br />
+					証拠金使用率:
+				</span>
+				<span className={clsx("percentage")}>{shiyouritsuText}%</span>
 			</div>
 		</div>
 	);
