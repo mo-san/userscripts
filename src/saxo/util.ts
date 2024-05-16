@@ -44,7 +44,7 @@ export const getUsdToJpy = async () => {
 
 const parseAmountAsNumber = (amount: string): number => {
 	const value = amount.replace(/,/g, "");
-	return Number.parseFloat(value);
+	return Number.parseFloat(value || "0");
 };
 
 const getDomText = (selector: string): string => {
@@ -63,6 +63,10 @@ const get_hitsuyou_shoukokin = (): { value: number | null; unit: string | null }
 	const [value, unit] = (content.textContent ?? "").split(" ");
 	if (unit === undefined) return { value: null, unit: null };
 	return { value: parseAmountAsNumber(value), unit };
+};
+
+export const getCuurentPrice = () => {
+	return getAmount(".tst-pricebar-last-traded .pricebar-value span");
 };
 
 export const getRimawari = (rate: number): number | null => {

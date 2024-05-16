@@ -3,18 +3,20 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import style from "./style.css" with { type: "text" };
-import { getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "./util.ts";
+import { getCuurentPrice, getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "./util.ts";
 
 const Main = () => {
 	const [rate, setRate] = useState<number | null>(null);
 	const [rimawari, setRimawari] = useState<number | null>(null);
 	const [shiyouritsu, setShiyouritsu] = useState<number | null>(null);
+	const [currentPrice, setCurrentPrice] = useState<number | null>(null);
 
 	const fetchRate = useCallback(async () => {
 		const fetchedRate = await getUsdToJpy();
 		setRate(fetchedRate);
 		setRimawari(getRimawari(fetchedRate));
 		setShiyouritsu(getShiyouritsu());
+		setCurrentPrice(getCuurentPrice());
 	}, []);
 
 	useEffect(() => {
@@ -28,6 +30,7 @@ const Main = () => {
 	const rimawariYearly = rimawari ? `${rimawari.toFixed(2)}%` : "N/A";
 	const rimawariMonthly = rimawari ? `${(rimawari / 12).toFixed(2)}%` : "N/A";
 	const shiyouritsuText = shiyouritsu ? `${shiyouritsu.toFixed(2)}%` : "N/A";
+	const currentPriceText = currentPrice ? `${(currentPrice * 0.9).toFixed(2)}ドル` : "N/A";
 
 	if (rate === null) {
 		return <div>Loading...</div>;
@@ -54,6 +57,10 @@ const Main = () => {
 			<div>
 				<span>約定後の証拠金使用率:</span>
 				<span className={clsx("percentage")}>{shiyouritsuText}</span>
+			</div>
+			<div>
+				<span>1割引き価格:</span>
+				<span className={clsx("percentage")}>{currentPriceText}</span>
 			</div>
 		</div>
 	);
