@@ -10,6 +10,7 @@
   border-radius: 8px;
   box-shadow: 2px 2px 4px #333;
   border: 1px solid #000;
+  z-index: 1201; /* オプション戦略のモーダルの z-index が 1200 なのでそれを上回るように */
 
   .container {
     display: grid;

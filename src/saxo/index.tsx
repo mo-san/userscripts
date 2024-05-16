@@ -112,6 +112,29 @@ const App = () => {
 		};
 	}, [dragging, handleMouseMove, handleMouseUp]);
 
+	// ウィンドウの大きさが変わったときに画面内に収まるように調整する
+	const adjustPosition = useCallback(() => {
+		if (!dragReceiverRef.current) return;
+
+		const { clientWidth, clientHeight } = document.documentElement;
+		const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = dragReceiverRef.current;
+
+		const maxLeft = clientWidth - offsetWidth;
+		const maxTop = clientHeight - offsetHeight;
+
+		const boundedLeft = Math.max(0, Math.min(maxLeft, offsetLeft));
+		const boundedTop = Math.max(0, Math.min(maxTop, offsetTop));
+
+		dragReceiverRef.current.style.inset = `${boundedTop}px auto auto ${boundedLeft}px`;
+	}, []);
+
+	useEffect(() => {
+		window.addEventListener("resize", adjustPosition);
+		return () => {
+			window.removeEventListener("resize", adjustPosition);
+		};
+	}, [adjustPosition]);
+
 	return (
 		<div id="saxo-helper" onMouseDown={handleMouseDown} ref={dragReceiverRef}>
 			<Main />
