@@ -3,60 +3,31 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import style from "./style.css" with { type: "text" };
-import { getUsdToJpy } from "./util.ts";
-
-const getDomValue = (selector: string) => {
-	const element = document.querySelector<HTMLElement>(selector);
-	if (!element) return null;
-	return Number.parseFloat(element.textContent?.replace(/,/g, "") ?? "0");
-};
-
-const getRimawari = (rate: number) => {
-	const tesuuryou = getDomValue("ul.optionstrategiesticket-details li:nth-of-type(1) .t-num");
-	const premium = getDomValue("ul.optionstrategiesticket-details li:nth-of-type(2) .t-num");
-	const jpy = getDomValue("ul.optionstrategiesticket-details li:nth-of-type(3) .t-num");
-	const hitsuyou_shoukokin = document.querySelector<HTMLElement>(
-		"ul.optionstrategiesticket-details li:nth-of-type(3) .details-val",
-	);
-
-	if (tesuuryou === null || premium === null || jpy === null || jpy === 0 || hitsuyou_shoukokin === null) return null;
-	if (/USD$/.test(hitsuyou_shoukokin.textContent ?? "")) return null;
-	return ((((premium - tesuuryou) * rate) / jpy) * 100).toFixed(2);
-};
-
-const getShiyouritsu = () => {
-	const jpy = getDomValue("ul.optionstrategiesticket-details li:nth-of-type(3) .t-num");
-	const yoryoku = getDomValue(".acctsummary-margin-available .t-num");
-	const jun_shisan = getDomValue(".acctsummary-account-value .t-num");
-
-	if (jpy === null || yoryoku === null || jun_shisan === null || jun_shisan === 0) return null;
-	return (100 - ((yoryoku - jpy) / jun_shisan) * 100).toFixed(2);
-};
-
-const getFooterElement = async (): Promise<HTMLElement> => {
-	const footerElement = document.querySelector<HTMLElement>("#footer .acctsummary");
-	if (footerElement) return footerElement;
-	return await new Promise<HTMLElement>((resolve) => setTimeout(() => resolve(getFooterElement()), 200));
-};
+import { getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "./util.ts";
 
 const Main = () => {
 	const [rate, setRate] = useState<number | null>(null);
-	const [rimawari, setRimawari] = useState<string | null>(null);
-	const [shiyouritsu, setShiyouritsu] = useState<string | null>(null);
+	const [rimawari, setRimawari] = useState<number | null>(null);
+	const [shiyouritsu, setShiyouritsu] = useState<number | null>(null);
 
-	useEffect(() => {
-		const fetchRate = async () => {
-			const fetchedRate = await getUsdToJpy();
-			setRate(fetchedRate);
-			setRimawari(getRimawari(fetchedRate));
-			setShiyouritsu(getShiyouritsu());
-		};
-
-		void fetchRate();
+	const fetchRate = useCallback(async () => {
+		const fetchedRate = await getUsdToJpy();
+		setRate(fetchedRate);
+		setRimawari(getRimawari(fetchedRate));
+		setShiyouritsu(getShiyouritsu());
 	}, []);
 
-	const rimawariText = rimawari ? `${rimawari}%` : "N/A";
-	const shiyouritsuText = shiyouritsu ? `${shiyouritsu}%` : "N/A";
+	useEffect(() => {
+		const intervalId = setInterval(fetchRate, 500);
+
+		return () => {
+			clearInterval(intervalId);
+		};
+	}, [fetchRate]);
+
+	const rimawariYearly = rimawari ? `${rimawari.toFixed(2)}%` : "N/A";
+	const rimawariMonthly = rimawari ? `${(rimawari / 12).toFixed(2)}%` : "N/A";
+	const shiyouritsuText = shiyouritsu ? `${shiyouritsu.toFixed(2)}%` : "N/A";
 
 	if (rate === null) {
 		return <div>Loading...</div>;
@@ -69,15 +40,20 @@ const Main = () => {
 					利回り:
 					<br />({rate} 円/ドル)
 				</span>
-				<span className={clsx("percentage")}>{rimawariText}%</span>
+				<div>
+					<div className={clsx("grid")}>
+						<span>年利:</span>
+						<span className={clsx("percentage")}>{rimawariYearly}</span>
+					</div>
+					<div className={clsx("grid")}>
+						<span>月利:</span>
+						<span className={clsx("percentage")}>{rimawariMonthly}</span>
+					</div>
+				</div>
 			</div>
 			<div>
-				<span>
-					約定後の
-					<br />
-					証拠金使用率:
-				</span>
-				<span className={clsx("percentage")}>{shiyouritsuText}%</span>
+				<span>約定後の証拠金使用率:</span>
+				<span className={clsx("percentage")}>{shiyouritsuText}</span>
 			</div>
 		</div>
 	);
