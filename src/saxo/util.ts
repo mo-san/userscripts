@@ -55,14 +55,16 @@ const getAmount = (selector: string): number => {
 	return parseAmountAsNumber(getDomText(selector));
 };
 
-const get_hitsuyou_shoukokin = (): { value: number | null; unit: string | null } => {
+const get_hitsuyou_shoukokin = (): { hitsuyou_shoukokin: number | null; unit: string | null } => {
 	const content = document.querySelector<HTMLElement>(
-		"ul.optionstrategiesticket-details li:nth-of-type(3) .details-val",
+		"ul[data-test-id='optionstrategiesticket-details'] > li:nth-of-type(3) .details-val",
 	);
-	if (content === null) return { value: null, unit: null };
+	if (content === null) return { hitsuyou_shoukokin: null, unit: null };
+
 	const [value, unit] = (content.textContent ?? "").split(" ");
-	if (unit === undefined) return { value: null, unit: null };
-	return { value: parseAmountAsNumber(value), unit };
+	if (unit === undefined) return { hitsuyou_shoukokin: null, unit: null };
+
+	return { hitsuyou_shoukokin: parseAmountAsNumber(value), unit };
 };
 
 export const getCuurentPrice = () => {
@@ -70,9 +72,9 @@ export const getCuurentPrice = () => {
 };
 
 export const getRimawari = (rate: number): number | null => {
-	const tesuuryou = getAmount("ul.optionstrategiesticket-details li:nth-of-type(1) .t-num");
-	const premium = getAmount("ul.optionstrategiesticket-details li:nth-of-type(2) .t-num");
-	const { value: hitsuyou_shoukokin, unit } = get_hitsuyou_shoukokin();
+	const tesuuryou = getAmount("ul[data-test-id='optionstrategiesticket-details'] > li:nth-of-type(1) .t-num");
+	const premium = getAmount("ul[data-test-id='optionstrategiesticket-details'] > li:nth-of-type(2) .t-num");
+	const { hitsuyou_shoukokin, unit } = get_hitsuyou_shoukokin();
 	const days = getDaysDifferenceUntilMaturityDate();
 
 	if (!tesuuryou || !premium || !hitsuyou_shoukokin || unit === "USD") return null;
@@ -83,7 +85,7 @@ export const getRimawari = (rate: number): number | null => {
 export const getShiyouritsu = (): number | null => {
 	const yoryoku = getAmount(".acctsummary-margin-available .t-num");
 	const jun_shisan = getAmount(".acctsummary-account-value .t-num");
-	const { value: hitsuyou_shoukokin, unit } = get_hitsuyou_shoukokin();
+	const { hitsuyou_shoukokin, unit } = get_hitsuyou_shoukokin();
 
 	if (!yoryoku || !jun_shisan || !hitsuyou_shoukokin || unit === "USD") return null;
 	return 100 - ((yoryoku - hitsuyou_shoukokin) / jun_shisan) * 100;
