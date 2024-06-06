@@ -12,7 +12,7 @@
   border: 1px solid #000;
   z-index: 1201; /* オプション戦略のモーダルの z-index が 1200 なのでそれを上回るように */
 
-  .container {
+  .saxo-helper__container {
     display: grid;
     gap: 1rem;
     place-content: center;
@@ -29,14 +29,14 @@
         font-size: 1.5rem;
       }
 
-      .grid {
+      .saxo-helper__grid {
         display: grid;
         grid-template-columns: auto 1fr;
         column-gap: 0.5rem;
         place-content: center;
       }
 
-      .percentage {
+      .saxo-helper__percentage {
         font-weight: bold;
         text-align: center;
       }

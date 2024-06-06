@@ -37,30 +37,30 @@ const Main = () => {
 	}
 
 	return (
-		<div className={clsx("container")}>
+		<div className={clsx("saxo-helper__container")}>
 			<div>
 				<span>
 					利回り:
 					<br />({rate} 円/ドル)
 				</span>
 				<div>
-					<div className={clsx("grid")}>
+					<div className={clsx("saxo-helper__grid")}>
 						<span>年利:</span>
-						<span className={clsx("percentage")}>{rimawariYearly}</span>
+						<span className={clsx("saxo-helper__percentage")}>{rimawariYearly}</span>
 					</div>
-					<div className={clsx("grid")}>
+					<div className={clsx("saxo-helper__grid")}>
 						<span>月利:</span>
-						<span className={clsx("percentage")}>{rimawariMonthly}</span>
+						<span className={clsx("saxo-helper__percentage")}>{rimawariMonthly}</span>
 					</div>
 				</div>
 			</div>
 			<div>
 				<span>約定後の証拠金使用率:</span>
-				<span className={clsx("percentage")}>{shiyouritsuText}</span>
+				<span className={clsx("saxo-helper__percentage")}>{shiyouritsuText}</span>
 			</div>
 			<div>
 				<span>1割引き価格:</span>
-				<span className={clsx("percentage")}>{currentPriceText}</span>
+				<span className={clsx("saxo-helper__percentage")}>{currentPriceText}</span>
 			</div>
 		</div>
 	);
