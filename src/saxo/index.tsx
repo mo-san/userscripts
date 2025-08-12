@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import style from "./style.css" with { type: "text" };
 import { getCuurentPrice, getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "@/saxo/util.ts";
+import style from "./style.css" with { type: "text" };
 
 const Main = () => {
 	const [rate, setRate] = useState<number | null>(null);
@@ -143,6 +143,7 @@ const App = () => {
 	}, [adjustPosition]);
 
 	return (
+		// biome-ignore lint/a11y/noStaticElementInteractions: マウスドラッグで位置を変更するので、onMouseDown は必要
 		<div id="saxo-helper" onMouseDown={handleMouseDown} ref={dragReceiverRef}>
 			<Main />
 			<style>{style}</style>
