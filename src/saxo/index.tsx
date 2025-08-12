@@ -3,7 +3,7 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import style from "./style.css" with { type: "text" };
-import { getCuurentPrice, getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "./util.ts";
+import { getCuurentPrice, getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "@/saxo/util.ts";
 
 const Main = () => {
 	const [rate, setRate] = useState<number | null>(null);
