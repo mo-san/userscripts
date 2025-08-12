@@ -1,5 +1,5 @@
-const cache = {
-	value: 0,
+const memoizedRate = {
+	rate: 0,
 	timestamp: 0,
 };
 
@@ -18,8 +18,8 @@ export const getUsdToJpy = async () => {
 	const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
 
 	// If the cache is not older than 1 hour, return the cached value
-	if (now - cache.timestamp < oneHour) {
-		return cache.value;
+	if (now - memoizedRate.timestamp < oneHour) {
+		return memoizedRate.rate;
 	}
 
 	// Otherwise, fetch a new value
@@ -36,8 +36,8 @@ export const getUsdToJpy = async () => {
 	console.info(`${hiduke} のドル円レート: ${rate}`);
 
 	// Update the cache
-	cache.value = rate;
-	cache.timestamp = now;
+	memoizedRate.rate = rate;
+	memoizedRate.timestamp = now;
 
 	return rate;
 };
@@ -120,4 +120,14 @@ export const getDaysDifferenceUntilMaturityDate = (): number => {
 	if (diffInDays < 0) return 0;
 
 	return diffInDays;
+};
+
+export const getSelectedStockPrice = () => {
+	const selectedStock = document.querySelector<HTMLElement>(
+		`.watchlist-item.is-selected .tst-col-item-LastTraded > span`,
+	);
+	if (selectedStock === null) return null;
+	if (selectedStock.textContent === null) return null;
+
+	return parseFloat(selectedStock.textContent);
 };

@@ -2,7 +2,14 @@ import { clsx } from "clsx";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { getCuurentPrice, getFooterElement, getRimawari, getShiyouritsu, getUsdToJpy } from "@/saxo/util.ts";
+import {
+	getCuurentPrice,
+	getFooterElement,
+	getRimawari,
+	getSelectedStockPrice,
+	getShiyouritsu,
+	getUsdToJpy,
+} from "@/saxo/util.ts";
 import style from "./style.css" with { type: "text" };
 
 const Main = () => {
@@ -10,6 +17,7 @@ const Main = () => {
 	const [rimawari, setRimawari] = useState<number | null>(null);
 	const [shiyouritsu, setShiyouritsu] = useState<number | null>(null);
 	const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+	const [selectedStockPrice, setSelectedStockPrice] = useState<number | null>(null);
 
 	const fetchRate = useCallback(async () => {
 		const fetchedRate = await getUsdToJpy();
@@ -17,6 +25,7 @@ const Main = () => {
 		setRimawari(getRimawari(fetchedRate));
 		setShiyouritsu(getShiyouritsu());
 		setCurrentPrice(getCuurentPrice());
+		setSelectedStockPrice(getSelectedStockPrice());
 	}, []);
 
 	useEffect(() => {
@@ -31,6 +40,7 @@ const Main = () => {
 	const rimawariMonthly = rimawari ? `${(rimawari / 12).toFixed(2)}%` : "N/A";
 	const shiyouritsuText = shiyouritsu ? `${shiyouritsu.toFixed(2)}%` : "N/A";
 	const currentPriceText = currentPrice ? `${(currentPrice * 0.9).toFixed(2)}ドル` : "N/A";
+	const selectedStockPriceText = selectedStockPrice ? `${(selectedStockPrice * 0.9).toFixed(2)}ドル` : "N/A";
 
 	if (rate === null) {
 		return <div>Loading...</div>;
@@ -61,6 +71,10 @@ const Main = () => {
 			<div>
 				<span>1割引き価格:</span>
 				<span className={clsx("saxo-helper__percentage")}>{currentPriceText}</span>
+			</div>
+			<div>
+				<span>選択中の銘柄の1割引き価格:</span>
+				<span className={clsx("saxo-helper__percentage")}>{selectedStockPriceText}</span>
 			</div>
 		</div>
 	);
