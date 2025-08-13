@@ -9,6 +9,7 @@ import {
 	getSelectedStockPrice,
 	getShiyouritsu,
 	getUsdToJpy,
+	makeDialogDraggable,
 } from "@/saxo/util.ts";
 import style from "./style.css" with { type: "text" };
 
@@ -35,6 +36,24 @@ const Main = () => {
 			clearInterval(intervalId);
 		};
 	}, [fetchRate]);
+
+	// ダイアログをドラッグ可能にする
+	useEffect(() => {
+		const observer = new MutationObserver(() => {
+			makeDialogDraggable();
+		});
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+		});
+
+		makeDialogDraggable();
+
+		return () => {
+			observer.disconnect();
+		};
+	}, []);
 
 	const rimawariYearly = rimawari ? `${rimawari.toFixed(2)}%` : "N/A";
 	const rimawariMonthly = rimawari ? `${(rimawari / 12).toFixed(2)}%` : "N/A";

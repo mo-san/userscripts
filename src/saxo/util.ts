@@ -131,3 +131,63 @@ export const getSelectedStockPrice = () => {
 
 	return parseFloat(selectedStock.textContent);
 };
+
+export const makeDialogDraggable = () => {
+	const dialog = document.querySelector<HTMLElement>(`[data-test-id="dialog-popup-position"]`);
+	if (!dialog) return;
+
+	const header = dialog.querySelector<HTMLElement>(`[data-test-id="dialog-sheet-header"]`);
+	if (!header) return;
+
+	if (header.style.cursor !== "move") {
+		header.style.cursor = "move";
+	}
+
+	let isDragging = false;
+	let dragStartX = 0;
+	let dragStartY = 0;
+	let initialX = 0;
+	let initialY = 0;
+
+	const handleMouseDown = (e: MouseEvent) => {
+		isDragging = true;
+		dragStartX = e.clientX;
+		dragStartY = e.clientY;
+
+		const computedStyle = window.getComputedStyle(dialog);
+		const insetValues = computedStyle.inset.split(" ");
+		if (insetValues.length >= 4) {
+			initialY = parseFloat(insetValues[0]) || 0;
+			initialX = parseFloat(insetValues[3]) || 0;
+		}
+
+		document.addEventListener("mousemove", handleMouseMove);
+		document.addEventListener("mouseup", handleMouseUp);
+		e.preventDefault();
+	};
+
+	const handleMouseMove = (e: MouseEvent) => {
+		if (!isDragging) return;
+
+		const deltaX = e.clientX - dragStartX;
+		const deltaY = e.clientY - dragStartY;
+		const newX = initialX + deltaX;
+		const newY = initialY + deltaY;
+
+		const maxX = window.innerWidth - dialog.offsetWidth;
+		const maxY = window.innerHeight - dialog.offsetHeight;
+
+		const boundedX = Math.max(0, Math.min(maxX, newX));
+		const boundedY = Math.max(0, Math.min(maxY, newY));
+
+		dialog.style.inset = `${boundedY}px auto auto ${boundedX}px`;
+	};
+
+	const handleMouseUp = () => {
+		isDragging = false;
+		document.removeEventListener("mousemove", handleMouseMove);
+		document.removeEventListener("mouseup", handleMouseUp);
+	};
+
+	header.addEventListener("mousedown", handleMouseDown);
+};
